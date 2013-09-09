@@ -1,0 +1,22 @@
+name = ImageX Migration
+description = ImageX migration accelerator module that assists in enhacing the capabilities of the Migrate module.
+package = ImageX - Migration
+version = 7.x-dev
+core = 7.x
+
+files[] = includes/ImagexMigrateFileUri.class.inc
+files[] = includes/ImagexMigration.class.inc
+files[] = includes/ImagexMigrationBase.class.inc
+files[] = includes/ImagexMigrationDatabase.class.inc
+files[] = includes/ImagexMigrationSqlMigration.class.inc
+files[] = includes/ImagexMigrationPluginInterface.inc
+files[] = includes/ImagexMigrationPluginBase.class.inc
+files[] = includes/sources/ImagexMigrateSourceSql.class.inc
+
+files[] = plugins/ImagexMigrationPluginIsRunnable.class.inc
+files[] = plugins/ImagexMigrationCreateTaxonomyVocabularyPlugin.class.inc
+
+dependencies[] = imagex
+dependencies[] = imagex_dbal
+dependencies[] = migrate (>=7.x-2.6-beta1)
+dependencies[] = migrate_extras

@@ -1,0 +1,12 @@
+name = ImageX Migration - Media
+description = ImageX migration media module assists in integrating and migration media related data from the Media module.
+package = ImageX - Migration
+version = 7.x-dev
+core = 7.x
+
+files[] = includes/ImagexMigrateMediaFileUri.class.inc
+files[] = includes/ImagexMigrateMediaFolderDestinationInterface.inc
+
+dependencies[] = imagex_migration
+dependencies[] = media
+dependencies[] = media_browser_plus

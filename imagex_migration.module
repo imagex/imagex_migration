@@ -1,0 +1,98 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_flush_caches().
+ */
+function imagex_migration_flush_caches() {
+  $tables = array();
+  // Determine whether or not the `migrate_status` table is be cleared.
+  if (imagex_migration_flush_statuses_on_cache_clear()) {
+    $tables[] = 'migrate_status';
+    $tables = array_merge($tables, _imagex_migration_get_migration_tables());
+  }
+
+  return $tables;
+}
+
+/**
+ * Returns an array of migration settings for ImageX migrations.
+ *
+ * @param boolean $reset
+ *   A boolean value used to indicate if a reset on cached version should occur.
+ * 
+ * @return array
+ *   Returns an associative array of configuration settings.
+ */
+function imagex_migration_settings($reset = FALSE) {
+  $settings = &drupal_static(__FUNCTION__, array());
+
+  if (empty($settings) || $reset) {
+    $settings_path = imagex_conf_path('imagex_migration', 'imagex_migration.settings.php');
+    if (FALSE === $settings_path) {
+      return array();
+    }
+
+    $settings = array();
+    include $settings_path;
+
+    if (!isset($settings)) {
+      $settings = array();
+    }
+    else if (!is_array($settings)) {
+      $settings = array();
+    }
+  }
+
+  return $settings;
+}
+
+/**
+ * Returns a boolean to indicate whether `migrate_status` should be cleared.
+ *
+ * Determining whether or not the `migrate_status` table is to be cleared on 
+ * a cache flush is done by checking the imagex migrate variable called
+ * `imagex_migration_flush_statuses_on_cache_clear` OR if the imagex mode is
+ * set to development.
+ * 
+ * @return boolean
+ *   Returns TRUE if the migrate_status is to be cleared, otherwise FALSE.
+ */
+function imagex_migration_flush_statuses_on_cache_clear() {
+  return variable_get('imagex_migration_flush_statuses_on_cache_clear', FALSE) || imagex_mode_is_development();
+}
+
+/**
+ * Returns an array of additional migration tables created and populated.
+ *
+ * The returned array of migrate_map_* and migrate_message_* tables are specific
+ * tables created for each migration.
+ *
+ * @return array
+ *   Returns an array of table names.
+ */
+function _imagex_migration_get_migration_tables() {
+  $migrate_tables = array();
+  foreach (module_implements('migrate_api') as $module) {
+    // TODO: Should this be revised to make use of module_invoke?
+    $function = $module . '_migrate_api';
+    $info = $function();
+    if (isset($info['api']) && MIGRATE_API_VERSION == $info['api']) {
+      if (isset($info['migrations']) && is_array($info['migrations'])) {
+        foreach ($info['migrations'] as $machine_name => $arguments) {
+          $machine_name = drupal_strtolower($machine_name);
+          if (db_table_exists('migrate_map_' . $machine_name)) {
+            $migrate_tables[] = 'migrate_map_' . $machine_name;
+          }
+          if (db_table_exists('migrate_message_' . $machine_name)) {
+            $migrate_tables[] = 'migrate_message_' . $machine_name;
+          }
+        }
+      }
+    }
+  }
+
+  return $migrate_tables;
+}
