@@ -14,7 +14,7 @@ function imagex_migration_flush_caches() {
     $tables = array_merge($tables, _imagex_migration_get_migration_tables());
   }
 
-  return $tables;
+  //return $tables;
 }
 
 /**
