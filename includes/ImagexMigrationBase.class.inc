@@ -431,7 +431,6 @@ abstract class ImagexMigrationBase extends Migration {
 
   public function processImport(array $options = array()) {
     $return = parent::processImport($options);
-    var_dump($return); exit;
   }
 
   /**
